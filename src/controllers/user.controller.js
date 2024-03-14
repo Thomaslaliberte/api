@@ -13,6 +13,7 @@ exports.ajouterUnUser = (req, res) => {
     if (!req.body.mot_de_passe) {
         message.push("mot_de_passe");
     }
+    
     if (message[0] != null) {
         res.status(400);
         res.send({

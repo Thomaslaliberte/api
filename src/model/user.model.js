@@ -1,4 +1,4 @@
-const sql = require("../config/db.js");
+const sql = require("../config/pg_db.js");
 const bcrypt = require('bcrypt');
 const costFactor = 10;
 const uuidv4 = require('uuid');
@@ -14,7 +14,7 @@ const Users = (user) => {
 
 Users.verifierUnUser = (req) => {
     return new Promise((resolve, reject) => {
-        let requete = `SELECT courriel FROM utilisateur WHERE courriel = ?`;
+        let requete = `SELECT courriel FROM utilisateur WHERE courriel = $1`;
         let params = [req.body.courriel];
         sql.query(requete, params, (erreur, resultat) => {
             if (erreur) {
@@ -22,7 +22,7 @@ Users.verifierUnUser = (req) => {
                 reject(erreur);
             }
             // Sinon je retourne le résultat sans faire de validation, c'est possible que le résultat soit vide
-            resolve(resultat);
+            resolve(resultat.rows);
         });
     });
 };
@@ -32,7 +32,7 @@ Users.ajouterUnUser = (req) => {
         bcrypt.hash(req.body.mot_de_passe, costFactor)
             .then(hash => {
                 let myuuid = uuidv4.v4();
-                let requete = `INSERT INTO utilisateur(nom, courriel, mot_de_passe, cle_api) value (?,?,?,?)`;    
+                let requete = `INSERT INTO utilisateur(nom, courriel, mot_de_passe, cle_api) value ($1,$2",$3,$4)`;    
                 let params = [req.body.nom, req.body.courriel, hash, myuuid]
                 sql.query(requete, params, (erreur, resultat) => {
                     if (erreur) {
@@ -53,7 +53,7 @@ Users.ajouterUnUser = (req) => {
 
 Users.validationCle = (cleApi) =>{
     return new Promise((resolve, reject) => {
-        const requete = 'SELECT COUNT(*) AS nbUsager FROM utilisateur u WHERE cle_api = ?; ';
+        const requete = 'SELECT COUNT(*) AS nbUsager FROM utilisateur u WHERE cle_api = $1; ';
         const parametres = [cleApi];
 
         sql.query(requete, parametres, (erreur, resultat) => {
@@ -69,7 +69,7 @@ Users.validationCle = (cleApi) =>{
 
 Users.verifierCombinaison = (req) => {
     return new Promise((resolve, reject) => {
-        let requete = `SELECT mot_de_passe FROM utilisateur WHERE courriel = ?`;
+        let requete = `SELECT mot_de_passe FROM utilisateur WHERE courriel = $1`;
         let params = [req.body.courriel];
         sql.query(requete, params, (erreur, resultat) => {
             if (erreur) {
@@ -77,14 +77,14 @@ Users.verifierCombinaison = (req) => {
                 reject(erreur);
             }
             // Sinon je retourne le résultat sans faire de validation, c'est possible que le résultat soit vide
-            resolve(resultat);
+            resolve(resultat.rows);
         });
     });
 };
 
 Users.chercherCle = (req) => {
     return new Promise((resolve, reject) => {
-        let requete = `SELECT cle_api FROM utilisateur WHERE courriel = ?`;
+        let requete = `SELECT cle_api FROM utilisateur WHERE courriel = $1`;
         let params = [req.body.courriel];
         sql.query(requete, params, (erreur, resultat) => {
             if (erreur) {
@@ -92,7 +92,7 @@ Users.chercherCle = (req) => {
                 reject(erreur);
             }
             // Sinon je retourne le résultat sans faire de validation, c'est possible que le résultat soit vide
-            resolve(resultat);
+            resolve(resultat.rows);
         });
     });
 };
@@ -100,7 +100,7 @@ Users.chercherCle = (req) => {
 Users.creationCle = (req) => {
     return new Promise((resolve, reject) => {
         let myuuid = uuidv4.v4();
-        let requete = `UPDATE utilisateur set cle_api = ? WHERE courriel = ?`;
+        let requete = `UPDATE utilisateur set cle_api = $1 WHERE courriel = $2`;
         let params = [myuuid,req.body.courriel];
         sql.query(requete, params, (erreur, resultat) => {
             if (erreur) {

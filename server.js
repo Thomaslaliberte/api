@@ -11,7 +11,7 @@ const authentification = require('./src/midleware/authentification.middleware');
 
 app.use(express.json())
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
-app.use('/api/pokemons',authentification, require('./src/routes/api/pokemons'));
+app.use('/api/pokemons', require('./src/routes/api/pokemons'));
 app.use('/api/users', require('./src/routes/api/user'));
 
 app.listen(PORT, () => {

@@ -1,4 +1,4 @@
-const sql = require("../config/db.js");
+const sql = require("../config/pg_db.js");
 
 const Pokemons = (pokemons) => {
     this.nom = pokemons.nom;
@@ -11,7 +11,7 @@ const Pokemons = (pokemons) => {
 
 Pokemons.ajouterUnPokemon = (req) => {
     return new Promise((resolve, reject) => {
-        let requete = `INSERT INTO pokemon(nom, type_primaire, type_secondaire, pv, attaque, defense) value (?,?,?,?,?,?)`;
+        let requete = `INSERT INTO pokemon(nom, type_primaire, type_secondaire, pv, attaque, defense) value ($1,$2,$3,$4,$5,$6)`;
         let params = [req.body.nom, req.body.type_primaire, req.body.type_secondaire, req.body.pv, req.body.attaque, req.body.defense]
         
         
@@ -22,7 +22,7 @@ Pokemons.ajouterUnPokemon = (req) => {
                 reject(erreur);
             }
             // Sinon je retourne le résultat sans faire de validation, c'est possible que le résultat soit vide
-            resolve(resultat);
+            resolve(resultat.rows);
         });
     });
 };
