@@ -12,7 +12,7 @@ const Pokemons = (pokemons) => {
 Pokemons.trouverLesPokemon = (type_primaire) => {
     return new Promise((resolve, reject) => {
         let requete = `SELECT nom, type_primaire, type_secondaire, pv, attaque, defense FROM pokemon`;
-        let params = []
+        let params = ["*"]
         if (type_primaire != null){
             requete = `SELECT nom, type_primaire, type_secondaire, pv, attaque, defense FROM pokemon WHERE type_primaire = $1`;
             params = [type_primaire];
